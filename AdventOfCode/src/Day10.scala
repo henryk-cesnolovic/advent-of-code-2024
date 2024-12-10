@@ -72,41 +72,38 @@ def prepareInput =
 
   val startingPoints = collectStartinngPoints()
 
-  def countTrailHeads(i: Int, j: Int, tails: Map[(Int, Int), Int] = Map()): Map[(Int, Int), Int] =
-    if (input(i)(j) == 9) tails + tails.get((i, j)).map { value => (i, j) -> (value + 1) }.getOrElse((i, j) -> 1)
+  def countTrailHeads(i: Int, j: Int): Int =
+    if (input(i)(j) == 9) 1
     else {
       val up = Try(input(i - 1)(j))
         .map { value =>
           if (value == input(i)(j) + 1)
             countTrailHeads(i - 1, j)
-          else Map()
+          else 0
         }
-        .getOrElse(Map())
+        .getOrElse(0)
       val right = Try(input(i)(j + 1))
         .map { value =>
           if (value == input(i)(j) + 1)
             countTrailHeads(i, j + 1)
-          else Map()
+          else 0
         }
-        .getOrElse(Map())
+        .getOrElse(0)
       val down = Try(input(i + 1)(j))
         .map { value =>
           if (value == input(i)(j) + 1)
             countTrailHeads(i + 1, j)
-          else Map()
+          else 0
         }
-        .getOrElse(Map())
+        .getOrElse(0)
       val left = Try(input(i)(j - 1))
         .map { value =>
           if (value == input(i)(j) + 1)
             countTrailHeads(i, j - 1)
-          else Map()
+          else 0
         }
-        .getOrElse(Map())
+        .getOrElse(0)
 
-      val maps = Seq(up, right, down, left)
-      maps.flatten
-        .groupBy(_._1)
-        .map { case (key, values) => key -> values.map(_._2).sum }
+      Seq(up, right, down, left).sum
     }
-  println(startingPoints.map { case (i, j) => countTrailHeads(i, j) }.foldLeft(0) { case (acc, m) => acc + m.values.reduce(_ + _) })
+  println(startingPoints.map { case (i, j) => countTrailHeads(i, j) }.reduce(_ + _))
